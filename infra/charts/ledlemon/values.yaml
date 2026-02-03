@@ -1,0 +1,70 @@
+global:
+  environment: production
+  awsRegion: ap-northeast-2
+  awsAccountId: "<your-aws-account-id>"
+
+gateway:
+  image:
+    repository: <your-aws-account-id>.dkr.ecr.ap-northeast-2.amazonaws.com/pixel-game/gateway
+    tag: latest
+  replicas: 2
+  service:
+    port: 8080
+    type: LoadBalancer
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    sqsUrl: "https://sqs.ap-northeast-2.amazonaws.com/<your-aws-account-id>/pixel-queue"
+    redisAddr: "redis-master:6379"
+    awsRegion: "ap-northeast-2"
+
+worker:
+  image:
+    repository: <your-aws-account-id>.dkr.ecr.ap-northeast-2.amazonaws.com/pixel-game/worker
+    tag: latest
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  env:
+    sqsUrl: "https://sqs.ap-northeast-2.amazonaws.com/<your-aws-account-id>/pixel-queue"
+    redisAddr: "redis-master"
+    dynamodbTableName: "PixelBoard"
+    awsRegion: "ap-northeast-2"
+
+web:
+  image:
+    repository: <your-aws-account-id>.dkr.ecr.ap-northeast-2.amazonaws.com/pixel-game/web
+    tag: latest
+  replicas: 2
+  service:
+    port: 3000
+    type: LoadBalancer
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: false
+  master:
+    persistence:
+      enabled: false
+
+ingress:
+  enabled: false

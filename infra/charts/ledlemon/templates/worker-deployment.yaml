@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: {{ .Values.worker.replicas }}
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+        - name: worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          env:
+            - name: SQS_QUEUE_URL
+              value: {{ .Values.worker.env.sqsUrl }}
+            - name: REDIS_ADDR
+              value: {{ .Values.gateway.env.redisAddr }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}

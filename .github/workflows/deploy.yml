@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.22'
+      
+      - name: Test Gateway
+        run: |
+          cd apps/gateway-go
+          go mod tidy
+          go test ./...
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Test Worker
+        run: |
+          cd apps/worker-python
+          pip install -r requirements.txt
+          # python -m pytest (Add tests later)
+
+      - name: Build Docker Images (Dry Run)
+        run: |
+          docker build -t gateway ./apps/gateway-go
+          docker build -t worker ./apps/worker-python
+          docker build -t web ./apps/web-client
