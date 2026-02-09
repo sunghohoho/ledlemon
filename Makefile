@@ -16,6 +16,7 @@ run-gateway:
 	AWS_ACCESS_KEY_ID=test \
 	AWS_SECRET_ACCESS_KEY=test \
 	SQS_QUEUE_URL=http://localhost:4566/000000000000/pixel-queue \
+	DYNAMODB_TABLE_NAME=PixelBoard \
 	REDIS_ADDR=localhost:6379 \
 	go run main.go
 
